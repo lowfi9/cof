@@ -1,0 +1,33 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, dev] # Executa quando fizer push nessas branches
+  pull_request:
+    branches: [main]       # Executa quando houver pull request na main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Ambiente de execução
+
+    steps:
+    - name: 📥 Checkout do código
+      uses: actions/checkout@v3
+
+    - name: ⚙️ Instalar Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: 📦 Instalar ESLint
+      run: npm install eslint
+
+    - name: 🔍 Verificar código com ESLint
+      run: npx eslint script.js --no-error-on-unmatched-pattern || true
+
+    - name: 🚀 Deploy no GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
